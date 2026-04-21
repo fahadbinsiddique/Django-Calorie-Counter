@@ -4,6 +4,7 @@ from calorie_app.forms import *
 from django.contrib.auth import login, logout
 from django.utils import timezone
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -40,31 +41,38 @@ def login_page(request):
     }
     return render(request, "master/base_form.html", context)
 
-
+@login_required
 def logout_page(request):
     logout(request)
     return redirect("login_page")
 
 
+@login_required
 def dashboard(request):
-    bmr = ProfileModel.objects.get(user= request.user)
-    bmrdata=bmr.bmr or 0
+    bmr = ProfileModel.objects.get(user=request.user or 1)
+    bmr = None
+    bmrdata = bmr.bmr or 0
+    bmrdata = None
     date = timezone.now()
-    calory_data = CalorieConsumeModel.objects.filter(
-        user=request.user, created_add=date
-    ).aggregate(total=Sum("calorie_consume"))['total'] or 0
+    calory_data = (
+        CalorieConsumeModel.objects.filter(
+            user=request.user, created_add=date
+        ).aggregate(total=Sum("calorie_consume"))["total"]
+        or 0
+    )
 
-    need_calory= bmrdata-calory_data 
+    need_calory = bmrdata - calory_data
 
     context = {
-        "form_data": round(calory_data,2),
+        "form_data": round(calory_data, 2),
         "heading": "dashboard",
         "title": "dashboard",
-        "need_calory":round(need_calory,2),
+        "need_calory": round(need_calory, 2),
     }
     return render(request, "dashboard.html", context)
 
 
+@login_required
 def profile(request):
     return render(
         request,
@@ -112,13 +120,15 @@ def profile_update(request):
     return render(request, "master/base_form.html", context)
 
 
+@login_required
 def CalorieConsume(request):
     try:
         user = request.user.user_profile
-    except CalorieConsumeModel.DoesNotExist:
+    except:
         user = None
 
     if request.method == "POST":
+
         form_data = CalorieConsumeForm(request.POST)
         if form_data.is_valid():
             data = form_data.save()
