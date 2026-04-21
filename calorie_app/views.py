@@ -50,9 +50,7 @@ def logout_page(request):
 @login_required
 def dashboard(request):
     bmr = ProfileModel.objects.get(user=request.user or 1)
-    bmr = None
     bmrdata = bmr.bmr or 0
-    bmrdata = None
     date = timezone.now()
     calory_data = (
         CalorieConsumeModel.objects.filter(
