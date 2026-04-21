@@ -7,4 +7,6 @@ urlpatterns = [
     path("logout/", logout_page, name="logout_page"),
     path("dashboard/", dashboard, name="dashboard"),
     path("profile/", profile, name="profile"),
+    path("profile-update/", profile_update, name="profile_update"),
+    path("Calorie-Consume/", CalorieConsume, name="CalorieConsume"),
 ]

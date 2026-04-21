@@ -48,6 +48,7 @@ class CalorieConsumeForm(forms.ModelForm):
     class Meta:
         model = CalorieConsumeModel
         fields = ["item_name", "calorie_consume"]
+        exclude = ["user"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

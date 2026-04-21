@@ -2,6 +2,8 @@
 
 
 {% block blockname %}
-    <p>dashboard</p>
+    <p>{{request.user.user_profile.name}}</p>
+    <p>Total Consumed Calory = {{form_data}} kcl</p>
+    <p>Need Calory = {{need_calory}} kcl</p>
 {% endblock blockname %}
     
