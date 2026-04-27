@@ -1,9 +1,87 @@
 {% extends 'master/base.html' %}
 
 {% block blockname %}
-  <p>Proifile</p>
-  <p>{{ request.user }}</p>
-  <p>{{ request.user.user_profile.name }}</p>
-  <p>{{ request.user.user_profile.bmr }}</p>
-  <a href="{% url 'profile_update' %}" class="btn btn-primary">Profile Update</a>
+
+<div class="profile-layout">
+
+  <!-- Avatar & name -->
+  <div class="card avatar-card">
+    <div class="avatar-circle">
+      {{ request.user.user_profile.name|slice:":1"|upper }}
+    </div>
+    <div class="avatar-info">
+      <h2 class="avatar-name">{{ request.user.user_profile.name }}</h2>
+      <span class="avatar-username">@{{ request.user }}</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card stats-card">
+    <h3 class="section-title"><i class="fa-solid fa-sliders"></i> Body Stats</h3>
+    <div class="stat-rows">
+      <div class="stat-row">
+        <span class="sr-label"><i class="fa-solid fa-fire-flame-curved"></i> BMR</span>
+        <span class="sr-value">
+          {% if request.user.user_profile.bmr %}
+            {{ request.user.user_profile.bmr|floatformat:1 }} <small>kcal/day</small>
+          {% else %}
+            <span class="na">Not set</span>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <a href="{% url 'profile_update' %}" class="btn-edit">
+      <i class="fa-solid fa-pen"></i> Edit Profile
+    </a>
+  </div>
+
+</div>
+
+<style>
+  .profile-layout { display: flex; flex-direction: column; gap: 16px; max-width: 480px; }
+
+  .avatar-card { display: flex; align-items: center; gap: 20px; }
+
+  .avatar-circle {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #00c8f0);
+    color: #0d0f14;
+    font-family: var(--font-head);
+    font-size: 1.6rem; font-weight: 700;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+
+  .avatar-name { font-family: var(--font-head); font-size: 1.2rem; letter-spacing: -.5px; }
+  .avatar-username { font-size: .82rem; color: var(--muted); }
+
+  .section-title { font-size: .85rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+  .stat-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .sr-label { font-size: .85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .sr-label i { color: var(--accent); }
+  .sr-value { font-family: var(--font-head); font-size: 1rem; font-weight: 700; }
+  .sr-value small { font-size: .72rem; color: var(--muted); font-family: var(--font-body); }
+  .na { font-family: var(--font-body); color: var(--muted); font-size: .85rem; font-weight: 400; }
+
+  .btn-edit {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 10px; padding: 10px 20px;
+    font-size: .875rem; font-weight: 600; text-decoration: none;
+    transition: background .2s, color .2s;
+  }
+  .btn-edit:hover { background: var(--accent); color: #0d0f14; }
+</style>
+
 {% endblock %}

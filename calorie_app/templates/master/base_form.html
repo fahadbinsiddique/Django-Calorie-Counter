@@ -1,13 +1,110 @@
 {% extends 'master/base.html' %}
 
-
 {% block blockname %}
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{form_data.as_p}}
+<div class="card form-card">
+  <form action="" method="POST" class="ct-form" novalidate>
+    {% csrf_token %}
 
-        <button type="submit" class="btn btn-primary">{{btn}}</button>
+    {% if form_data.non_field_errors %}
+    <div class="form-errors">
+      {% for error in form_data.non_field_errors %}
+        <p><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-    </form>
+    {% for field in form_data %}
+    <div class="field-group {% if field.errors %}has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+        <span class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ field.errors|join:", " }}</span>
+      {% endif %}
+      {% if field.help_text %}
+        <span class="field-hint">{{ field.help_text }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn-primary">
+      {{ btn }}
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </form>
+</div>
+
+<style>
+  .form-card { max-width: 480px; }
+
+  .ct-form { display: flex; flex-direction: column; gap: 18px; }
+
+  .form-errors {
+    background: rgba(255,107,107,.1);
+    border: 1px solid rgba(255,107,107,.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #ff9a9a;
+    font-size: .875rem;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-group label {
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field-group input,
+  .field-group select,
+  .field-group textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: .95rem;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+    appearance: none;
+  }
+  .field-group input:focus,
+  .field-group select:focus,
+  .field-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,160,.12);
+  }
+  .field-group.has-error input,
+  .field-group.has-error select {
+    border-color: var(--accent2);
+  }
+  .field-group select option { background: var(--surface); }
+
+  .field-error { font-size: .8rem; color: var(--accent2); }
+  .field-hint  { font-size: .78rem; color: var(--muted); }
+
+  .btn-primary {
+    align-self: flex-start;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 24px;
+    font-family: var(--font-body);
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+</style>
 {% endblock blockname %}
-    

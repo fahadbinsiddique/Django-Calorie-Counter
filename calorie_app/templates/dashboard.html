@@ -1,9 +1,138 @@
 {% extends 'master/base.html' %}
 
-
 {% block blockname %}
-    <p>{{request.user.user_profile.name}}</p>
-    <p>Total Consumed Calory = {{form_data}} kcl</p>
-    <p>Need Calory = {{need_calory}} kcl</p>
+
+<div class="dash-grid">
+
+  <!-- Consumed card -->
+  <div class="stat-card consumed">
+    <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+    <div class="stat-body">
+      <span class="stat-label">Consumed Today</span>
+      <span class="stat-value">{{ form_data }} <small>kcal</small></span>
+    </div>
+  </div>
+
+  <!-- Remaining card -->
+  <div class="stat-card {% if need_calory < 0 %}over{% else %}remaining{% endif %}">
+    <div class="stat-icon">
+      {% if need_calory < 0 %}
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      {% else %}
+        <i class="fa-solid fa-bolt"></i>
+      {% endif %}
+    </div>
+    <div class="stat-body">
+      <span class="stat-label">
+        {% if need_calory < 0 %}Over Budget{% else %}Remaining{% endif %}
+      </span>
+      <span class="stat-value">{{ need_calory }} <small>kcal</small></span>
+    </div>
+  </div>
+
+  <!-- Progress bar card -->
+  <div class="card progress-card">
+    {% with total=form_data|add:need_calory %}
+    <div class="prog-header">
+      <span>Daily Progress</span>
+      <span class="prog-pct" id="pctLabel">—</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="progFill" data-consumed="{{ form_data }}" data-total="{{ form_data|add:need_calory }}"></div>
+    </div>
+    <p class="prog-note">
+      Goal: <strong>{{ form_data|add:need_calory }} kcal</strong>
+    </p>
+    {% endwith %}
+  </div>
+
+  <!-- Quick action -->
+  <div class="card action-card">
+    <p class="action-label">Ready to log a meal?</p>
+    <a href="{% url 'CalorieConsume' %}" class="btn-log">
+      <i class="fa-solid fa-plus"></i> Log Food
+    </a>
+  </div>
+
+</div>
+
+<style>
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 520px) { .dash-grid { grid-template-columns: 1fr; } }
+
+  .progress-card, .action-card { grid-column: 1 / -1; }
+
+  /* stat cards */
+  .stat-card {
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    animation: fadeUp .4s ease both;
+  }
+  .stat-card.consumed  { border-left: 3px solid #ff9f43; }
+  .stat-card.remaining { border-left: 3px solid var(--accent); }
+  .stat-card.over      { border-left: 3px solid var(--accent2); }
+
+  .stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .consumed  .stat-icon { background: rgba(255,159,67,.15);  color: #ff9f43; }
+  .remaining .stat-icon { background: rgba(0,229,160,.12);   color: var(--accent); }
+  .over      .stat-icon { background: rgba(255,107,107,.12); color: var(--accent2); }
+
+  .stat-body { display: flex; flex-direction: column; gap: 2px; }
+  .stat-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+  .stat-value { font-family: var(--font-head); font-size: 1.7rem; font-weight: 700; line-height: 1; }
+  .stat-value small { font-size: .8rem; color: var(--muted); font-family: var(--font-body); }
+
+  /* progress */
+  .prog-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: .85rem; color: var(--muted); font-weight: 500; }
+  .prog-pct { color: var(--accent); font-weight: 700; font-family: var(--font-head); }
+  .prog-track { height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .prog-fill  { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #00c8f0); border-radius: 99px; transition: width .8s cubic-bezier(.22,1,.36,1); }
+  .prog-note  { margin-top: 10px; font-size: .82rem; color: var(--muted); }
+  .prog-note strong { color: var(--text); }
+
+  /* action */
+  .action-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .action-label { color: var(--muted); font-size: .9rem; }
+  .btn-log {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #0d0f14;
+    border-radius: 10px; padding: 10px 22px;
+    font-weight: 700; font-size: .9rem; text-decoration: none;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-log:hover { opacity: .85; transform: translateY(-1px); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .stat-card:nth-child(2) { animation-delay: .08s; }
+</style>
+
+<script>
+  const fill   = document.getElementById('progFill');
+  const label  = document.getElementById('pctLabel');
+  const consumed = parseFloat(fill.dataset.consumed) || 0;
+  const total    = parseFloat(fill.dataset.total)    || 1;
+  const pct = Math.min(100, Math.round((consumed / total) * 100));
+  label.textContent = pct + '%';
+  setTimeout(() => fill.style.width = pct + '%', 100);
+</script>
+
 {% endblock blockname %}
-    

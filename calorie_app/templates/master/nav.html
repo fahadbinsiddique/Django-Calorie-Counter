@@ -1,29 +1,40 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Calorie Counter</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+<nav class="topnav">
+  <a class="brand" href="{% url 'dashboard' %}">
+    <i class="fa-solid fa-fire-flame-curved"></i> CalorieTrack
+  </a>
+
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+    <i class="fa-solid fa-bars"></i>
   </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'CalorieConsume' %}">Consume Calorie</a>
-      </li>
-      {% if request.user.is_authenticated %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'logout_page' %}">Logout</a>
-      </li>
-      {% else %}
-       <li class="nav-item">
-        <a class="nav-link" href="{% url 'login_page' %}">Login</a>
-      </li>
-      {% endif %}
-      
-    </ul>
-  </div>
+
+  <ul class="nav-links" id="navLinks">
+    <li>
+      <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>
+        <i class="fa-solid fa-user"></i> Profile
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'CalorieConsume' %}" {% if request.resolver_match.url_name == 'CalorieConsume' %}class="active"{% endif %}>
+        <i class="fa-solid fa-utensils"></i> Log Food
+      </a>
+    </li>
+    {% if request.user.is_authenticated %}
+    <li class="logout">
+      <a href="{% url 'logout_page' %}">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </li>
+    {% else %}
+    <li>
+      <a href="{% url 'login_page' %}">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+    </li>
+    {% endif %}
+  </ul>
 </nav>
