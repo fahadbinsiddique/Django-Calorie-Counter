@@ -77,12 +77,8 @@ WSGI_APPLICATION = 'calorie_project.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "your_database_name",
-        "USER": "pybrothe_fahad",
-        "PASSWORD": "py fahad@619786",
-        "HOST": "calorytracker.pybrothers.top",
-        "PORT": "3306",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
